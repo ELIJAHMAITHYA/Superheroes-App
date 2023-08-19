@@ -19,9 +19,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.HorizontalAlignmentLine
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -31,6 +33,7 @@ import com.example.superheroes2.model.Hero
 import com.example.superheroes2.model.heroes
 import com.example.superheroes2.ui.theme.Shapes
 import com.example.superheroes2.ui.theme.SuperHeroes2Theme
+import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,7 +45,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-
+                    heroApp()
                 }
             }
         }
@@ -64,22 +67,28 @@ fun heroDescription(@StringRes description: Int) {
 @Composable
 fun heroImage(
     @DrawableRes image: Int,
-    modifier: Modifier = Modifier
-        .size(64.dp)
-        .padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 8.dp)
-        .clip(shape = Shapes.medium),
+    modifier: Modifier,
 
     ) {
-    Image(
-        painter = painterResource(image), contentDescription = null
-    )
+    Column(
+        horizontalAlignment = Alignment.End
+    ) {
+        Image(
+            painter = painterResource(image), contentDescription = null,
+            modifier = modifier
+                .size(64.dp)
+                .padding(end = 8.dp, top = 8.dp)
+                .clip(MaterialTheme.shapes.small),
+            //  contentScale = ContentScale.Crop,
+        )
+    }
 }
 
 @Composable
 fun heroname(@StringRes name: Int) {
     Text(
         text = stringResource(name),
-        style = MaterialTheme.typography.displayMedium
+        style = MaterialTheme.typography.displaySmall
 
 
     )
@@ -96,30 +105,33 @@ fun hero(
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
-            Column() {
+            Column(
+                modifier = Modifier,
+                horizontalAlignment = Alignment.Start
+            ) {
+
                 heroname(name = HeroesRepository.nameRes)
                 heroDescription(HeroesRepository.descriptionRes)
             }
-            heroImage(HeroesRepository.imageRes)
+            Column(
+                horizontalAlignment = Alignment.End
+            ) {
 
+                //heroImage(image = HeroesRepository.imageRes)
+                heroImage(
+                    image = HeroesRepository.imageRes, modifier = Modifier
+                )
+            }
         }
-
     }
 
 }
 
 @Composable
 fun heroApp() {
-//    LazyColumn(contentPadding = it) {
-//        items(dogs) {
-//            DogItem(
-//                dog = it,
-//                modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
-//            )
-//        }
-//    }
+
     LazyColumn {
-        items(heroes){
+        items(heroes) {
             hero(HeroesRepository = it)
         }
     }
@@ -129,5 +141,6 @@ fun heroApp() {
 @Preview
 @Composable
 fun heroPreview() {
+    heroApp()
 
 }
